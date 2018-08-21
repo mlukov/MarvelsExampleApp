@@ -52,7 +52,7 @@ class NetworkModule( private val cacheFile: File ) {
 
         val retrofit = Retrofit.Builder()
                 .baseUrl( BuildConfig.API_ENDPOINT)
-                .client( okHttpClient )
+                //.client( okHttpClient )
                 .addConverterFactory( GsonConverterFactory.create( gson ) )
                 .addCallAdapterFactory( RxJava2CallAdapterFactory.create() )
                 .build()

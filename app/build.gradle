@@ -13,7 +13,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "API_ENDPOINT", "\"gateway.marvel.com/v1/public/\""
+        buildConfigField "String", "API_ENDPOINT", "\"http://gateway.marvel.com/v1/public/\""
+        buildConfigField "String", "PRIVATE_KEY", "\"\""
+        buildConfigField "String", "PUBLIC_KEY", "\"\""
     }
     buildTypes {
         release {

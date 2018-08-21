@@ -1,12 +1,12 @@
-package com.mlukov.marvels.utils
+package com.mlukov.marvels.domain.calculators
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import kotlin.experimental.and
 
-class HashCalculator {
+class HashCalculator : IHashCalculator {
 
-    fun calculate(vararg args: String): String? {
+    override fun calculate(vararg args: String): String {
 
         val input = concatenateArgs(args.toList())
         val digest = generateDigest(input)
@@ -41,17 +41,21 @@ class HashCalculator {
         return null
     }
 
-    private fun toHexString(digest: ByteArray?): String? {
+    private fun toHexString(digest: ByteArray?): String {
 
-        if (digest == null)
-            return null
+        val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
-        val stringBuilder = StringBuilder()
+        if( digest == null )
+            return ""
 
-        for (digestByte: Byte in digest) {
-            stringBuilder.append( Integer.toString((digestByte and 0xFF.toByte() ) + 0x100 , 16).substring(1))
+        val result = StringBuilder(digest.size * 2)
+
+        digest.forEach {
+            val i = it.toInt()
+            result.append(HEX_CHARS[i shr 4 and 0x0f])
+            result.append(HEX_CHARS[i and 0x0f])
         }
 
-        return stringBuilder.toString()
+        return result.toString()
     }
 }

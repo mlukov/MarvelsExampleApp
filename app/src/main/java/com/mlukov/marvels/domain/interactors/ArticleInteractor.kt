@@ -2,12 +2,11 @@ package com.mlukov.marvels.domain.interactors
 
 import com.mlukov.marvels.api.model.ArticleApiData
 import com.mlukov.marvels.api.model.ArticleDetailApiData
-import com.mlukov.marvels.api.model.ArticleDetailItemApiData
 import com.mlukov.marvels.api.model.ArticleListApi
 import com.mlukov.marvels.domain.models.ArticleData
 import com.mlukov.marvels.domain.models.ArticleDataList
 import com.mlukov.marvels.domain.models.ArticleDetailData
-import com.mlukov.marvels.domain.repositories.articles.IArticlesApiRepository
+import com.mlukov.marvels.domain.repositories.marvels.IMarvelsRepository
 import com.mlukov.marvels.domain.repositories.local.ILocalStorageRepository
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -19,7 +18,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 open class ArticleInteractor
-@Inject constructor(val articlesApiRepository : IArticlesApiRepository,
+@Inject constructor(val marvelsRepository : IMarvelsRepository,
                     val localStorageRepository : ILocalStorageRepository) : IArticleInteractor{
 
 
@@ -30,7 +29,7 @@ open class ArticleInteractor
 
     override fun getArticleDetails(articleId : Int) : Single<ArticleDetailData> {
 
-        return articlesApiRepository.getArticleDetails( articleId ).map{ createDetailFrom( it ) }
+        return marvelsRepository.getArticleDetails( articleId ).map{ createDetailFrom( it ) }
     }
 
     override fun clearCache() : Completable {
@@ -55,7 +54,7 @@ open class ArticleInteractor
 
     private fun getArticleListFromServer() : Single<ArticleDataList> {
 
-        return articlesApiRepository.getArticleList()
+        return marvelsRepository.getArticleList()
                 .flatMap(object : Function<ArticleListApi, SingleSource<ArticleDataList>> {
                     @Throws(Exception::class)
                     override fun apply( articleApiDataList : ArticleListApi) : SingleSource<ArticleDataList> {

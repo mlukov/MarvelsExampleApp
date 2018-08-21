@@ -4,7 +4,7 @@ import com.mlukov.marvels.api.model.ArticleApiData
 import com.mlukov.marvels.domain.interactors.ArticleInteractor
 import com.mlukov.marvels.domain.models.ArticleData
 import com.mlukov.marvels.domain.models.ArticleDataList
-import com.mlukov.marvels.domain.repositories.articles.IArticlesApiRepository
+import com.mlukov.marvels.domain.repositories.marvels.IMarvelsRepository
 import com.mlukov.marvels.domain.repositories.local.ILocalStorageRepository
 import com.mlukov.marvels.presentation.articles.list.model.ArticleViewData
 import com.mlukov.marvels.presentation.articles.list.presenter.ArticlesListPresenter
@@ -45,7 +45,7 @@ class ArticlesListPresenterUnitTest {
     private val localStorageRepository: ILocalStorageRepository? = null
 
     @Mock
-    private val articlesApiRepository: IArticlesApiRepository? = null
+    private val mMarvelsRepository: IMarvelsRepository? = null
 
     @Mock
     private val articlesInteractorMock: ArticleInteractor? = null
@@ -98,7 +98,7 @@ class ArticlesListPresenterUnitTest {
     fun Should_Load_Articles_List_Into_View() {
 
         doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
         doAnswer(object : Answer<Single<ArticleDataList>> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> {
@@ -129,7 +129,7 @@ class ArticlesListPresenterUnitTest {
     fun Should_Load_Articles_List_From_Cache() {
 
         doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
         doAnswer(object : Answer  <Single<ArticleDataList>> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock):  Single<ArticleDataList> {
@@ -160,7 +160,7 @@ class ArticlesListPresenterUnitTest {
     fun Should_Load_Articles_List_From_Server_Refresh_True() {
 
         doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
 
         doAnswer(object : Answer <Any>{
             @Throws(Throwable::class)
@@ -217,7 +217,7 @@ class ArticlesListPresenterUnitTest {
     fun Should_Load_Articles_List_From_Server_Refresh_False_No_Cached_Items() {
 
         doReturn(Single.just(ArticleDataList.empty())).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
@@ -274,7 +274,7 @@ class ArticlesListPresenterUnitTest {
     fun Verify_Method_Calls_When_Loading_From_Cache() {
 
         doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
         doAnswer(object : Answer <Single<ArticleDataList> > {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> {
@@ -307,7 +307,7 @@ class ArticlesListPresenterUnitTest {
     fun Verify_Method_Calls_When_Loading_From_Server_Refresh_True() {
 
         doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
 
         doAnswer(object : Answer <Single<ArticleDataList> > {
             @Throws(Throwable::class)
@@ -358,7 +358,7 @@ class ArticlesListPresenterUnitTest {
         Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).getArticleList()
         Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).clearCache()
         Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
-        Mockito.verify<IArticlesApiRepository>(articlesApiRepository, Mockito.times(1)).getArticleList()
+        Mockito.verify<IMarvelsRepository>(mMarvelsRepository, Mockito.times(1)).getArticleList()
         Mockito.verify<IArticlesListView>(articlesView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
         Mockito.verify<IArticlesListView>(articlesView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
     }
@@ -367,7 +367,7 @@ class ArticlesListPresenterUnitTest {
     fun Verify_Method_Calls_When_Loading_From_Server_Refresh_False() {
 
         doReturn(Single.just(ArticleDataList.empty())).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IArticlesApiRepository>(articlesApiRepository).getArticleList()
+        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
 
         doAnswer(object : Answer <Single<ArticleDataList>>{
             @Throws(Throwable::class)
@@ -419,7 +419,7 @@ class ArticlesListPresenterUnitTest {
         Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(0)).clearCache()
         Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).getArticleDataListFromCache()
         Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
-        Mockito.verify<IArticlesApiRepository>(articlesApiRepository, Mockito.times(1)).getArticleList()
+        Mockito.verify<IMarvelsRepository>(mMarvelsRepository, Mockito.times(1)).getArticleList()
         Mockito.verify<IArticlesListView>(articlesView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
         Mockito.verify<IArticlesListView>(articlesView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
     }

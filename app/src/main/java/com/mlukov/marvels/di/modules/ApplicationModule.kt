@@ -6,10 +6,14 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.mlukov.marvels.ArticlesApp
 import com.mlukov.marvels.di.annotations.AppContext
+import com.mlukov.marvels.domain.calculators.HashCalculator
+import com.mlukov.marvels.domain.calculators.IHashCalculator
 import com.mlukov.marvels.domain.interactors.ArticleInteractor
 import com.mlukov.marvels.domain.interactors.IArticleInteractor
-import com.mlukov.marvels.domain.repositories.articles.ArticlesApiRepository
-import com.mlukov.marvels.domain.repositories.articles.IArticlesApiRepository
+import com.mlukov.marvels.domain.providers.ITimestampProvider
+import com.mlukov.marvels.domain.providers.TimestampProvider
+import com.mlukov.marvels.domain.repositories.marvels.MarvelsRepository
+import com.mlukov.marvels.domain.repositories.marvels.IMarvelsRepository
 import com.mlukov.marvels.domain.repositories.local.ILocalStorageRepository
 import com.mlukov.marvels.domain.repositories.local.LocalStorageRepository
 import com.mlukov.marvels.utils.ISchedulersProvider
@@ -52,9 +56,23 @@ class ApplicationModule {
     }
 
     @Provides
-    internal fun providesArticlesApiRepository( articlesApiRepository: ArticlesApiRepository): IArticlesApiRepository {
+    internal fun providesArticlesApiRepository( articlesApiRepository: MarvelsRepository): IMarvelsRepository {
 
         return articlesApiRepository
+    }
+
+    @Provides
+    @Singleton
+    internal fun providesIHashCalculator() :IHashCalculator{
+
+        return HashCalculator()
+    }
+
+    @Provides
+    @Singleton
+    internal fun providesITimestampProvider() :ITimestampProvider{
+
+        return TimestampProvider()
     }
 
     @Provides

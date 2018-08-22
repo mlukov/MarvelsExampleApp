@@ -1,15 +1,15 @@
 package com.mlukov.marvels
 
-import com.mlukov.marvels.api.model.ArticleApiData
-import com.mlukov.marvels.domain.interactors.ArticleInteractor
-import com.mlukov.marvels.domain.models.ArticleData
-import com.mlukov.marvels.domain.models.ArticleDataList
-import com.mlukov.marvels.domain.repositories.marvels.IMarvelsRepository
-import com.mlukov.marvels.domain.repositories.local.ILocalStorageRepository
-import com.mlukov.marvels.presentation.articles.list.model.ArticleViewData
-import com.mlukov.marvels.presentation.articles.list.presenter.ArticlesListPresenter
-import com.mlukov.marvels.presentation.articles.list.view.IArticlesListView
-import com.mlukov.marvels.presentation.articles.list.model.ArticleListViewModel
+import com.mlukov.marvels.repositories.remote.model.ComicRemote
+import com.mlukov.marvels.domain.interactors.ComicInteractor
+import com.mlukov.marvels.domain.models.Comic
+import com.mlukov.marvels.domain.models.ComicList
+import com.mlukov.marvels.domain.repositories.remote.IMarvelsRemoteRepository
+import com.mlukov.marvels.domain.repositories.local.IComicsLocalRepository
+import com.mlukov.marvels.presentation.comic.list.model.ComicViewData
+import com.mlukov.marvels.presentation.comic.list.presenter.ComicListPresenter
+import com.mlukov.marvels.presentation.comic.list.view.IComicListView
+import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
 import com.mlukov.marvels.presentation.providers.INetworkInfoProvider
 import com.mlukov.marvels.presentation.providers.IResourceProvider
 import com.mlukov.marvels.utils.ISchedulersProvider
@@ -33,7 +33,7 @@ import org.mockito.Mockito.doReturn
 class ArticlesListPresenterUnitTest {
 
     @Mock
-    private val articlesView: IArticlesListView? = null
+    private val comicView: IComicListView? = null
 
     @Mock
     val resourceProvider : IResourceProvider? = null
@@ -42,29 +42,29 @@ class ArticlesListPresenterUnitTest {
     val networkInfoProvider : INetworkInfoProvider ? = null
 
     @Mock
-    private val localStorageRepository: ILocalStorageRepository? = null
+    private val comicsLocalRepository: IComicsLocalRepository? = null
 
     @Mock
-    private val mMarvelsRepository: IMarvelsRepository? = null
+    private val mMarvelsRemoteRepository: IMarvelsRemoteRepository? = null
 
     @Mock
-    private val articlesInteractorMock: ArticleInteractor? = null
+    private val articlesInteractorMock: ComicInteractor? = null
 
     @Mock
     private val schedulersProvider: ISchedulersProvider? = null
 
     @InjectMocks
-    private val articlesPresenter: ArticlesListPresenter? = null
+    private val articlesPresenter: ComicListPresenter? = null
 
     @InjectMocks
-    private val articlesInteractor: ArticleInteractor? = null
+    private val articlesInteractor: ComicInteractor? = null
 
     private val testScheduler = TestScheduler()
 
-    private val cachedItems = ArticleDataList()
-    private val serverItems = mutableListOf<ArticleApiData>()
+    private val cachedItems = ComicList()
+    private val serverItems = mutableListOf<ComicRemote>()
 
-    private val articleItems = mutableListOf<ArticleViewData>()
+    private val articleItems = mutableListOf<ComicViewData>()
 
     @Before
     fun setup() {
@@ -75,47 +75,47 @@ class ArticlesListPresenterUnitTest {
         doReturn(testScheduler).`when`<ISchedulersProvider>(schedulersProvider).uiScheduler()
         doReturn(testScheduler).`when`<ISchedulersProvider>(schedulersProvider).computationScheduler()
 
-        val articleApiData = ArticleApiData()
+        val comicRemote = ComicRemote()
 
-        articleApiData.id = 2
-        articleApiData.title = "Title2"
-        articleApiData.subtitle = "Subtitle2"
-        articleApiData.date = Date("1982/01/21 18:41")
+        comicRemote.id = 2
+        comicRemote.title = "Title2"
+        comicRemote.subtitle = "Subtitle2"
+        comicRemote.date = Date("1982/01/21 18:41")
 
-        val articleData = ArticleData()
+        val articleData = Comic()
         articleData.id = 1
         articleData.title = "TITLE1"
         articleData.subtitle = "SUBTTITLE1"
         articleData.date = Date("1980/01/21 18:41")
 
-        val cachedData = mutableListOf<ArticleData>()
+        val cachedData = mutableListOf<Comic>()
         cachedData.add(articleData)
-        cachedItems.articles = cachedData
-        serverItems.add(articleApiData)
+        cachedItems.comics = cachedData
+        serverItems.add(comicRemote)
     }
 
     @Test
     fun Should_Load_Articles_List_Into_View() {
 
-        doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
-        doAnswer(object : Answer<Single<ArticleDataList>> {
+        doReturn(Single.just(cachedItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
+        doAnswer(object : Answer<Single<ComicList>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
-        doAnswer(object : Answer<ArrayList<ArticleViewData>> {
+        doAnswer(object : Answer<ArrayList<ComicViewData>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded( Mockito.any() )
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any() )
 
         articlesPresenter!!.loadArticles(false)
         testScheduler.triggerActions()
@@ -128,25 +128,25 @@ class ArticlesListPresenterUnitTest {
     @Test
     fun Should_Load_Articles_List_From_Cache() {
 
-        doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
-        doAnswer(object : Answer  <Single<ArticleDataList>> {
+        doReturn(Single.just(cachedItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
+        doAnswer(object : Answer  <Single<ComicList>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock):  Single<ArticleDataList> {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock):  Single<ComicList> {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
-        doAnswer(object : Answer < ArticleListViewModel> {
+        doAnswer(object : Answer < ComicListViewModel> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArticleListViewModel? {
+            override fun answer(invocation: InvocationOnMock): ComicListViewModel? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(false)
         testScheduler.triggerActions()
@@ -159,51 +159,51 @@ class ArticlesListPresenterUnitTest {
     @Test
     fun Should_Load_Articles_List_From_Server_Refresh_True() {
 
-        doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
+        doReturn(Single.just(cachedItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
 
         doAnswer(object : Answer <Any>{
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any? {
 
-                cachedItems.articles!!.clear()
+                cachedItems.comics!!.clear()
                 return null
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).dropArticleDataListCache()
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).dropArticleDataListCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>  {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
                 return articlesInteractor!!.clearCache()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).clearCache()
+        }).`when`<ComicInteractor>(articlesInteractorMock).clearCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>   {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>   {
 
-                val articles = invocation.getArgument<ArticleDataList>(0)
+                val articles = invocation.getArgument<ComicList>(0)
                 return Single.just(articles)
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList(Mockito.any(ComicList::class.java))
 
-        doAnswer(object : Answer <ArrayList<ArticleViewData>> {
+        doAnswer(object : Answer <ArrayList<ComicViewData>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(true)
         testScheduler.triggerActions()
@@ -216,51 +216,51 @@ class ArticlesListPresenterUnitTest {
     @Test
     fun Should_Load_Articles_List_From_Server_Refresh_False_No_Cached_Items() {
 
-        doReturn(Single.just(ArticleDataList.empty())).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
+        doReturn(Single.just(ComicList.empty())).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any? {
 
-                cachedItems.articles!!.clear()
+                cachedItems.comics!!.clear()
                 return null
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).dropArticleDataListCache()
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).dropArticleDataListCache()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
-                return articlesInteractor!!.getArticleList()
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
                 return articlesInteractor!!.clearCache()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).clearCache()
+        }).`when`<ComicInteractor>(articlesInteractorMock).clearCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> >{
+        doAnswer(object : Answer <Single<ComicList> >{
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>  {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
 
-                val articles = invocation.getArgument<ArticleDataList>(0)
+                val articles = invocation.getArgument<ComicList>(0)
                 return Single.just(articles)
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList(Mockito.any(ComicList::class.java))
 
-        doAnswer(object : Answer <ArrayList<ArticleViewData>> {
+        doAnswer(object : Answer <ArrayList<ComicViewData>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(false)
         testScheduler.triggerActions()
@@ -273,154 +273,154 @@ class ArticlesListPresenterUnitTest {
     @Test
     fun Verify_Method_Calls_When_Loading_From_Cache() {
 
-        doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doReturn(Single.just(cachedItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
-        doAnswer(object : Answer <ArrayList<ArticleViewData>> {
+        doAnswer(object : Answer <ArrayList<ComicViewData>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(false)
         testScheduler.triggerActions()
 
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).getArticleList()
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(0)).clearCache()
-        Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).getArticleDataListFromCache()
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(1)).getComicList()
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(0)).clearCache()
+        Mockito.verify<IComicsLocalRepository>(comicsLocalRepository, Mockito.times(1)).getComicList()
+        Mockito.verify<IComicListView>(comicView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
+        Mockito.verify<IComicListView>(comicView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
     }
 
     @Test
     fun Verify_Method_Calls_When_Loading_From_Server_Refresh_True() {
 
-        doReturn(Single.just(cachedItems)).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
+        doReturn(Single.just(cachedItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> ? {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> ? {
 
-                cachedItems.articles!!.clear()
+                cachedItems.comics!!.clear()
                 return null
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).dropArticleDataListCache()
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).dropArticleDataListCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>  {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
                 return articlesInteractor!!.clearCache()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).clearCache()
+        }).`when`<ComicInteractor>(articlesInteractorMock).clearCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>  {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
 
-                val articleDataList = invocation.getArgument<ArticleDataList>(0)
+                val articleDataList = invocation.getArgument<ComicList>(0)
                 return Single.just(articleDataList)
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList(Mockito.any(ComicList::class.java))
 
-        doAnswer(object : Answer <ArrayList<ArticleViewData>> {
+        doAnswer(object : Answer <ArrayList<ComicViewData>> {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(true)
         testScheduler.triggerActions()
 
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).getArticleList()
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).clearCache()
-        Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
-        Mockito.verify<IMarvelsRepository>(mMarvelsRepository, Mockito.times(1)).getArticleList()
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(1)).getComicList()
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(1)).clearCache()
+        Mockito.verify<IComicsLocalRepository>(comicsLocalRepository, Mockito.times(1)).updateComicList(Mockito.any(ComicList::class.java))
+        Mockito.verify<IMarvelsRemoteRepository>(mMarvelsRemoteRepository, Mockito.times(1)).getComicsList()
+        Mockito.verify<IComicListView>(comicView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
+        Mockito.verify<IComicListView>(comicView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
     }
 
     @Test
     fun Verify_Method_Calls_When_Loading_From_Server_Refresh_False() {
 
-        doReturn(Single.just(ArticleDataList.empty())).`when`<ILocalStorageRepository>(localStorageRepository).getArticleDataListFromCache()
-        doReturn(Single.just<List<ArticleApiData>>(serverItems)).`when`<IMarvelsRepository>(mMarvelsRepository).getArticleList()
+        doReturn(Single.just(ComicList.empty())).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<ComicRemote>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList()
 
-        doAnswer(object : Answer <Single<ArticleDataList>>{
+        doAnswer(object : Answer <Single<ComicList>>{
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> ? {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> ? {
 
-                cachedItems.articles!!.clear()
+                cachedItems.comics!!.clear()
                 return null
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).dropArticleDataListCache()
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).dropArticleDataListCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList> > {
+        doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList>  {
-                return articlesInteractor!!.getArticleList()
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
+                return articlesInteractor!!.getComicList()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).getArticleList()
+        }).`when`<ComicInteractor>(articlesInteractorMock).getComicList()
 
         doAnswer(object : Answer<Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
                 return articlesInteractor!!.clearCache()
             }
-        }).`when`<ArticleInteractor>(articlesInteractorMock).clearCache()
+        }).`when`<ComicInteractor>(articlesInteractorMock).clearCache()
 
-        doAnswer(object : Answer <Single<ArticleDataList>>{
+        doAnswer(object : Answer <Single<ComicList>>{
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Single<ArticleDataList> {
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> {
 
-                val articleDataList = invocation.getArgument<ArticleDataList>(0)
+                val articleDataList = invocation.getArgument<ComicList>(0)
                 return Single.just(articleDataList)
             }
-        }).`when`<ILocalStorageRepository>(localStorageRepository).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList(Mockito.any(ComicList::class.java))
 
-        doAnswer(object : Answer <ArrayList<ArticleViewData>>{
+        doAnswer(object : Answer <ArrayList<ComicViewData>>{
             @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): ArrayList<ArticleViewData>? {
+            override fun answer(invocation: InvocationOnMock): ArrayList<ComicViewData>? {
 
-                val arrayList = invocation.getArgument<ArrayList<ArticleViewData>>(0)
+                val arrayList = invocation.getArgument<ArrayList<ComicViewData>>(0)
                 articleItems.clear()
                 articleItems.addAll(arrayList)
                 return null
             }
-        }).`when`<IArticlesListView>(articlesView).onArticlesLoaded(Mockito.any())
+        }).`when`<IComicListView>(comicView).onArticlesLoaded(Mockito.any())
 
         articlesPresenter!!.loadArticles(false)
         testScheduler.triggerActions()
 
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(1)).getArticleList()
-        Mockito.verify<ArticleInteractor>(articlesInteractorMock, Mockito.times(0)).clearCache()
-        Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).getArticleDataListFromCache()
-        Mockito.verify<ILocalStorageRepository>(localStorageRepository, Mockito.times(1)).addArticleDataListToCache(Mockito.any(ArticleDataList::class.java))
-        Mockito.verify<IMarvelsRepository>(mMarvelsRepository, Mockito.times(1)).getArticleList()
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
-        Mockito.verify<IArticlesListView>(articlesView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(1)).getComicList()
+        Mockito.verify<ComicInteractor>(articlesInteractorMock, Mockito.times(0)).clearCache()
+        Mockito.verify<IComicsLocalRepository>(comicsLocalRepository, Mockito.times(1)).getComicList()
+        Mockito.verify<IComicsLocalRepository>(comicsLocalRepository, Mockito.times(1)).updateComicList(Mockito.any(ComicList::class.java))
+        Mockito.verify<IMarvelsRemoteRepository>(mMarvelsRemoteRepository, Mockito.times(1)).getComicsList()
+        Mockito.verify<IComicListView>(comicView, Mockito.times(2)).onLoadingStateChange(Mockito.anyBoolean())
+        Mockito.verify<IComicListView>(comicView, Mockito.times(1)).onArticlesLoaded(Mockito.any())
     }
 }

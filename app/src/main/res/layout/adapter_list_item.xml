@@ -5,52 +5,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="@dimen/list_item_margin">
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/titleListTextView"
-        android:layout_width="match_parent"
+    <android.support.constraint.Guideline
+        android:id="@+id/verticalThumbnailEndGuideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="2dp"
-        android:layout_margin="3dp"
-        android:gravity="start"
-        android:minHeight="40dp"
-        app:autoSizeMaxTextSize="@dimen/max_title_text_size"
-        app:autoSizeMinTextSize="@dimen/min_title_text_size"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2"/>
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/comicImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        tools:src="@tools:sample/backgrounds/scenic"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/verticalThumbnailEndGuideline"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@tools:sample/full_names" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintDimensionRatio="H,1:1"/>
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/subtitleListTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="2dp"
-        android:layout_margin="3dp"
-        android:gravity="start"
-        android:minHeight="30dp"
-        app:autoSizeMaxTextSize="@dimen/max_subtitle_text_size"
-        app:autoSizeMinTextSize="@dimen/min_subtitle_text_size"
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center_vertical|left"
+        android:layout_marginLeft="@dimen/list_item_margin"
+        app:autoSizeMinTextSize="@dimen/min_title_text_size"
+        app:autoSizeMaxTextSize="@dimen/max_title_text_size"
         app:autoSizeTextType="uniform"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/verticalThumbnailEndGuideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleListTextView"
-        tools:text="@tools:sample/full_names" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/dateListTextView"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:gravity="right|center_vertical"
-        android:textSize="@dimen/min_body_text_size"
-        app:autoSizeMaxTextSize="@dimen/max_body_text_size"
-        app:autoSizeMinTextSize="@dimen/min_body_text_size"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subtitleListTextView"
-        tools:text="@tools:sample/date/ddmmyy" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@tools:sample/full_names"/>
 
 </android.support.constraint.ConstraintLayout>

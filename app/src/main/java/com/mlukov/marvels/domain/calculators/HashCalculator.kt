@@ -43,7 +43,7 @@ class HashCalculator : IHashCalculator {
 
     private fun toHexString(digest: ByteArray?): String {
 
-        val HEX_CHARS = "0123456789ABCDEF".toCharArray()
+        val HEX_CHARS = "0123456789abcdef".toCharArray()
 
         if( digest == null )
             return ""

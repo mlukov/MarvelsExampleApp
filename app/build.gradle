@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.mlukov.articles"
+        applicationId "com.mlukov.marvels"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
@@ -14,8 +14,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "API_ENDPOINT", "\"http://gateway.marvel.com/v1/public/\""
-        buildConfigField "String", "PRIVATE_KEY", "\"\""
-        buildConfigField "String", "PUBLIC_KEY", "\"\""
+        buildConfigField "String", "PRIVATE_KEY", "\"0709a696718c65d99360c10dcc0a8a25490ae179\""
+        buildConfigField "String", "PUBLIC_KEY", "\"f72daec9ce0c93fa85aa4f0091ba3fec\""
     }
     buildTypes {
         release {
@@ -23,7 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.3'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -56,6 +56,17 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$rootProject.ext.daggerVer"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.ext.daggerVer"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.ext.daggerVer"
+
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+    kapt "android.arch.persistence.room:compiler:1.0.0"
+    // RxJava support for Room
+    implementation "android.arch.persistence.room:rxjava2:1.0.0-alpha5"
+    androidTestImplementation "android.arch.core:core-testing:1.0.0-alpha5"
+
+    implementation 'com.github.bumptech.glide:glide:4.3.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
+    kapt 'com.github.bumptech.glide:compiler:4.3.1'
 }
 repositories {
     mavenCentral()

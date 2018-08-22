@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 
 import com.mlukov.marvels.R
-import com.mlukov.marvels.presentation.articles.details.model.ArticleDetailsViewData
-import com.mlukov.marvels.presentation.articles.details.view.ArticleDetailsFragment
-import com.mlukov.marvels.presentation.articles.list.view.ArticlesListFragment
+import com.mlukov.marvels.presentation.comic.details.model.ComicDetailsViewData
+import com.mlukov.marvels.presentation.comic.details.view.ComicDetailsFragment
+import com.mlukov.marvels.presentation.comic.list.view.ComicListFragment
 import com.mlukov.marvels.presentation.base.BaseActivity
 
 import javax.inject.Inject
 
-import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -31,7 +30,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, IMainNavigator 
     override fun onResume() {
 
         super.onResume()
-        showArticleList()
+        showComicList()
     }
 
     override fun onPause() {
@@ -51,26 +50,26 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, IMainNavigator 
 
 
     //region IMainNavigator implementation
-    override fun showArticleList() {
+    override fun showComicList() {
 
-        var articlesFragment = supportFragmentManager.findFragmentByTag( ArticlesListFragment.TAG )
+        var articlesFragment = supportFragmentManager.findFragmentByTag(ComicListFragment.TAG )
         if (articlesFragment == null) {
 
-            articlesFragment = ArticlesListFragment.newInstance()
+            articlesFragment = ComicListFragment.newInstance()
         }
 
-        showScreen(articlesFragment, ArticlesListFragment.TAG, false, false)
+        showScreen(articlesFragment, ComicListFragment.TAG, false, false)
     }
 
-    override fun showArticleDetails( articleDetailsViewData: ArticleDetailsViewData) {
+    override fun showComicDetails(comicDetailsViewData: ComicDetailsViewData) {
 
-        var articleDetailsFragment = supportFragmentManager.findFragmentByTag( ArticleDetailsFragment.TAG )
+        var articleDetailsFragment = supportFragmentManager.findFragmentByTag(ComicDetailsFragment.TAG )
         if (articleDetailsFragment == null) {
 
-            articleDetailsFragment = ArticleDetailsFragment.newInstance( articleDetailsViewData )
+            articleDetailsFragment = ComicDetailsFragment.newInstance(comicDetailsViewData )
         }
 
-        showScreen(articleDetailsFragment, ArticleDetailsFragment.TAG, true, true )
+        showScreen(articleDetailsFragment, ComicDetailsFragment.TAG, true, true )
     }
     //endregion IMainNavigator implementation
 

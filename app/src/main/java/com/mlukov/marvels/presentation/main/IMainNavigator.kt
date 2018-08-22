@@ -1,10 +1,10 @@
 package com.mlukov.marvels.presentation.main
 
-import com.mlukov.marvels.presentation.articles.details.model.ArticleDetailsViewData
+import com.mlukov.marvels.presentation.comic.details.model.ComicDetailsViewData
 
 interface IMainNavigator {
 
-        fun showArticleList()
+        fun showComicList()
 
-        fun showArticleDetails( articleDetailsViewData: ArticleDetailsViewData )
+        fun showComicDetails(comicDetailsViewData: ComicDetailsViewData )
 }

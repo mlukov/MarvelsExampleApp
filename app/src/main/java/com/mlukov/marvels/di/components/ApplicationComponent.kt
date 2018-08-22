@@ -1,7 +1,7 @@
 package com.mlukov.marvels.di.components
 
 
-import com.mlukov.marvels.ArticlesApp
+import com.mlukov.marvels.MarvelsApp
 import com.mlukov.marvels.di.modules.*
 
 import javax.inject.Singleton
@@ -23,11 +23,11 @@ interface ApplicationComponent {
     interface Builder {
 
         @BindsInstance
-        fun application(app : ArticlesApp) : Builder
-        fun network(networkModule : NetworkModule) : Builder
+        fun application(app : MarvelsApp) : Builder
+        //fun network(networkModule : NetworkModule) : Builder
         fun device( deviceModule : DeviceModule) : Builder
         fun build(): ApplicationComponent
     }
 
-    fun inject(application : ArticlesApp)
+    fun inject(application : MarvelsApp)
 }

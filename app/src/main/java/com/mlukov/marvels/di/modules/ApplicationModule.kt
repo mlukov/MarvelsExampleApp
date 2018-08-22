@@ -4,18 +4,19 @@ import android.content.Context
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.mlukov.marvels.ArticlesApp
+import com.mlukov.marvels.MarvelsApp
 import com.mlukov.marvels.di.annotations.AppContext
 import com.mlukov.marvels.domain.calculators.HashCalculator
 import com.mlukov.marvels.domain.calculators.IHashCalculator
-import com.mlukov.marvels.domain.interactors.ArticleInteractor
-import com.mlukov.marvels.domain.interactors.IArticleInteractor
+import com.mlukov.marvels.domain.interactors.ComicInteractor
+import com.mlukov.marvels.domain.interactors.IComicInteractor
 import com.mlukov.marvels.domain.providers.ITimestampProvider
 import com.mlukov.marvels.domain.providers.TimestampProvider
-import com.mlukov.marvels.domain.repositories.marvels.MarvelsRepository
-import com.mlukov.marvels.domain.repositories.marvels.IMarvelsRepository
-import com.mlukov.marvels.domain.repositories.local.ILocalStorageRepository
-import com.mlukov.marvels.domain.repositories.local.LocalStorageRepository
+import com.mlukov.marvels.repositories.remote.MarvelsRemoteRepository
+import com.mlukov.marvels.domain.repositories.remote.IMarvelsRemoteRepository
+import com.mlukov.marvels.domain.repositories.local.IComicsLocalRepository
+import com.mlukov.marvels.repositories.local.ComicsLocalRepository
+import com.mlukov.marvels.repositories.local.MarvelsDatabase
 import com.mlukov.marvels.utils.ISchedulersProvider
 import com.mlukov.marvels.utils.SchedulersProvider
 
@@ -23,6 +24,9 @@ import javax.inject.Singleton
 
 import dagger.Module
 import dagger.Provides
+import android.arch.persistence.room.Room
+
+
 
 @Module
 class ApplicationModule {
@@ -30,9 +34,9 @@ class ApplicationModule {
     @Provides
     @Singleton
     @AppContext
-    internal fun providesAppContext(articlesApp : ArticlesApp) : Context {
+    internal fun providesAppContext(marvelsApp : MarvelsApp) : Context {
 
-        return articlesApp
+        return marvelsApp
     }
 
     @Provides
@@ -44,9 +48,19 @@ class ApplicationModule {
     }
 
     @Provides
-    internal fun providesLocalStorageRepository(@AppContext context: Context, gson: Gson): ILocalStorageRepository {
+    @Singleton
+    internal fun providesMarvelsDatabase( @AppContext context: Context ) :MarvelsDatabase{
 
-        return LocalStorageRepository(context.cacheDir, gson)
+        return Room.databaseBuilder( context,
+                                     MarvelsDatabase::class.java,
+                                     "marvels_db" )
+                .build()
+    }
+
+    @Provides
+    internal fun providesLocalStorageRepository(database :MarvelsDatabase): IComicsLocalRepository {
+
+        return ComicsLocalRepository( database)
     }
 
     @Provides
@@ -56,7 +70,7 @@ class ApplicationModule {
     }
 
     @Provides
-    internal fun providesArticlesApiRepository( articlesApiRepository: MarvelsRepository): IMarvelsRepository {
+    internal fun providesArticlesApiRepository( articlesApiRepository: MarvelsRemoteRepository): IMarvelsRemoteRepository {
 
         return articlesApiRepository
     }
@@ -76,7 +90,7 @@ class ApplicationModule {
     }
 
     @Provides
-    fun providesArticleInteractor(articleInteractor: ArticleInteractor): IArticleInteractor {
+    fun providesArticleInteractor(articleInteractor: ComicInteractor): IComicInteractor {
 
         return articleInteractor
     }

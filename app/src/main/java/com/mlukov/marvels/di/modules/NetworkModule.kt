@@ -3,7 +3,7 @@ package com.mlukov.marvels.di.modules
 import android.util.Log
 import com.google.gson.Gson
 import com.mlukov.marvels.BuildConfig
-import com.mlukov.marvels.api.MarvelsApiController
+import com.mlukov.marvels.repositories.remote.MarvelsApiController
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-class NetworkModule( private val cacheFile: File ) {
+class NetworkModule() {
 
     companion object {
         val TAG = NetworkModule::class.java.simpleName
@@ -26,22 +26,11 @@ class NetworkModule( private val cacheFile: File ) {
     @Singleton
     fun providesOkHttpClient(): OkHttpClient{
 
-        var cache: Cache? = null
-
-        try {
-
-            cache = Cache( cacheFile, 10* 1024*1024 )
-        }
-        catch ( ex : Exception ){
-
-            Log.e( TAG, ex.message, ex )
-        }
 
         return OkHttpClient.Builder()
                 .connectTimeout(2L, TimeUnit.MINUTES)
                 .readTimeout(2L, TimeUnit.MINUTES)
                 .writeTimeout(2L, TimeUnit.MINUTES)
-                .cache( cache)
                 .build()
     }
 
@@ -52,7 +41,7 @@ class NetworkModule( private val cacheFile: File ) {
 
         val retrofit = Retrofit.Builder()
                 .baseUrl( BuildConfig.API_ENDPOINT)
-                //.client( okHttpClient )
+                .client( okHttpClient )
                 .addConverterFactory( GsonConverterFactory.create( gson ) )
                 .addCallAdapterFactory( RxJava2CallAdapterFactory.create() )
                 .build()

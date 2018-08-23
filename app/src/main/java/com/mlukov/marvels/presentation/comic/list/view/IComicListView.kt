@@ -7,7 +7,7 @@ interface IComicListView {
 
     fun onLoadingStateChange(isLoading : Boolean );
 
-    fun onArticlesLoaded(comicListViewModel : ComicListViewModel )
+    fun onComicsLoaded(comicListViewModel : ComicListViewModel )
 
     fun onError( errorMessage: String)
 }

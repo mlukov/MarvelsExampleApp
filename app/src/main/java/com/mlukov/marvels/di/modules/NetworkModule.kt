@@ -37,7 +37,7 @@ class NetworkModule() {
 
     @Provides
     @Singleton
-    fun providesArticlesApiController( okHttpClient : OkHttpClient, gson : Gson ): MarvelsApiController{
+    fun providesMarvelsApiController( okHttpClient : OkHttpClient, gson : Gson ): MarvelsApiController{
 
         val retrofit = Retrofit.Builder()
                 .baseUrl( BuildConfig.API_ENDPOINT)

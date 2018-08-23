@@ -4,7 +4,7 @@ import java.io.Serializable
 
 class ComicList () {
 
-    var comics = mutableListOf<Comic>()
+    var comics:MutableList<Comic> = mutableListOf<Comic>()
 
     constructor( list: List<Comic>) : this(){
 

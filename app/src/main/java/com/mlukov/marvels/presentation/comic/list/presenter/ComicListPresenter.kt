@@ -4,6 +4,7 @@ import android.util.Log
 import com.mlukov.marvels.R
 import com.mlukov.marvels.domain.interactors.IComicInteractor
 import com.mlukov.marvels.domain.models.Comic
+import com.mlukov.marvels.domain.providers.ILogger
 import com.mlukov.marvels.mvp.BasePresenter
 import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
 import com.mlukov.marvels.presentation.comic.list.model.ComicViewData
@@ -21,30 +22,31 @@ constructor(val comicView : IComicListView,
             val comicInteractor : IComicInteractor,
             val schedulersProvider : ISchedulersProvider,
             val resourceProvider : IResourceProvider,
-            val networkInfoProvider : INetworkInfoProvider ) : BasePresenter(), IComicListPresenter {
+            val networkInfoProvider : INetworkInfoProvider,
+            val logger: ILogger) : BasePresenter(), IComicListPresenter {
 
 
-    override fun loadArticles(  refresh: Boolean ) {
-        add( getArticleList( refresh ) )
+    override fun loadComics(refresh: Boolean ) {
+        add( getComicList( refresh ) )
     }
 
-    private fun getArticleList( refresh: Boolean) : Disposable{
+    private fun getComicList( refresh: Boolean) : Disposable{
 
         return comicInteractor.getComicList( refresh, LIST_LIMIT ).map {
 
-                val articlesList = ComicListViewModel()
+                val comicsList = ComicListViewModel()
 
-                for( article in it.comics){
+                for( comic in it.comics){
 
-                    articlesList.list.add(createFrom(article ))
+                    comicsList.list.add(createFrom(comic ))
                 }
-                return@map articlesList
+                return@map comicsList
             }
                 .subscribeOn( schedulersProvider.ioScheduler())
                 .observeOn( schedulersProvider.uiScheduler())
                 .subscribe({
 
-                    comicView.onArticlesLoaded(it)
+                    comicView.onComicsLoaded(it)
                     comicView.onLoadingStateChange(false )
                 },
                         {
@@ -56,7 +58,7 @@ constructor(val comicView : IComicListView,
 
     private fun onError( throwable : Throwable ){
 
-        Log.e( TAG, throwable.message, throwable)
+        logger.e( TAG, throwable.message, throwable)
 
         comicView.onLoadingStateChange(false )
 

@@ -4,5 +4,5 @@ import com.mlukov.marvels.mvp.IBasePresenter
 
 interface IComicListPresenter :IBasePresenter {
 
-    fun loadArticles( refresh: Boolean )
+    fun loadComics(refresh: Boolean )
 }

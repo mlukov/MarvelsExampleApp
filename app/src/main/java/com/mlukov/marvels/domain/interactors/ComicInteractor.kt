@@ -18,7 +18,7 @@ open class ComicInteractor
 
     override fun getComicList( refresh: Boolean, limit : Long  ) : Single<ComicList> {
 
-        return loadComicList( refresh, limit ).first( ComicList())
+        return loadComicList( refresh, limit )
     }
 
     override fun getComic(refresh: Boolean, id : Long) : Single<Comic> {
@@ -34,16 +34,18 @@ open class ComicInteractor
 
 
     //region private methods
-    private fun loadComicList( refresh: Boolean, limit: Long ) : Flowable<ComicList> {
+    private fun loadComicList( refresh: Boolean, limit: Long ) : Single<ComicList> {
 
         if( refresh )
-            return getComicListFromServer( limit ).toFlowable()
+            return getComicListFromServer( limit )
 
         return comicsLocalRepository.getComicList()
-                .concatWith( getComicListFromServer( limit ) )
-                .filter( Predicate<ComicList> { comicDataList->
-                    (comicDataList.comics.isEmpty() == false )
-                })
+                .flatMap {
+                    if( it.comics.isEmpty() == false )
+                        Single.just( it )
+                    else
+                        getComicListFromServer(limit )
+                }
     }
 
     private fun getComicListFromServer( limit : Long ) : Single<ComicList> {

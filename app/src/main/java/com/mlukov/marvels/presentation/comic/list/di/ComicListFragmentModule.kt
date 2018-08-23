@@ -18,6 +18,6 @@ interface ComicListFragmentModule {
     fun bindsComicsListView(comicListFragment: ComicListFragment ): IComicListView
 
     @Binds
-    fun bindComicsListPresenter( articlesListPresenter: ComicListPresenter): IComicListPresenter
+    fun bindComicsListPresenter( comicsListPresenter: ComicListPresenter): IComicListPresenter
 
 }

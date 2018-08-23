@@ -17,7 +17,6 @@ import com.mlukov.marvels.R
 import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
 import com.mlukov.marvels.presentation.comic.list.presenter.IComicListPresenter
 import dagger.android.support.AndroidSupportInjection
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class ComicListFragment : Fragment(), IComicListView {
@@ -64,7 +63,7 @@ class ComicListFragment : Fragment(), IComicListView {
         listSwipeRefreshLayout?.setColorSchemeResources(android.R.color.holo_orange_dark)
         listSwipeRefreshLayout?.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
 
-            listPresenter.loadArticles(true)
+            listPresenter.loadComics(true)
         })
 
         return view
@@ -73,7 +72,7 @@ class ComicListFragment : Fragment(), IComicListView {
     override fun onResume() {
 
         super.onResume()
-        listPresenter.loadArticles( false )
+        listPresenter.loadComics(false )
     }
 
     override fun onPause() {
@@ -88,7 +87,7 @@ class ComicListFragment : Fragment(), IComicListView {
         listSwipeRefreshLayout?.setRefreshing(isLoading)
     }
 
-    override fun onArticlesLoaded(comicListViewModel: ComicListViewModel) {
+    override fun onComicsLoaded(comicListViewModel: ComicListViewModel) {
 
         listAdapter.updateList(comicListViewModel.list )
 

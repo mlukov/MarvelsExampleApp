@@ -1,0 +1,264 @@
+package com.mlukov.marvels
+
+import com.mlukov.marvels.domain.interactors.ComicInteractor
+import com.mlukov.marvels.domain.models.Comic
+import com.mlukov.marvels.domain.models.ComicList
+import com.mlukov.marvels.domain.providers.ILogger
+import com.mlukov.marvels.domain.repositories.remote.IMarvelsRemoteRepository
+import com.mlukov.marvels.domain.repositories.local.IComicsLocalRepository
+import com.mlukov.marvels.presentation.comic.list.model.ComicViewData
+import com.mlukov.marvels.presentation.comic.list.presenter.ComicListPresenter
+import com.mlukov.marvels.presentation.comic.list.view.IComicListView
+import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
+import com.mlukov.marvels.presentation.providers.INetworkInfoProvider
+import com.mlukov.marvels.presentation.providers.IResourceProvider
+import com.mlukov.marvels.utils.ISchedulersProvider
+
+import org.junit.*
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import com.nhaarman.mockitokotlin2.any
+
+import io.reactivex.Single
+import io.reactivex.schedulers.TestScheduler
+import org.mockito.*
+import org.mockito.Mockito.*
+
+class ComicListPresenterUnitTest {
+
+    @Mock
+    val comicView: IComicListView? = null
+
+    @Mock
+    val resourceProvider : IResourceProvider? = null
+
+    @Mock
+    val logger : ILogger? = null
+
+    @Mock
+    val networkInfoProvider : INetworkInfoProvider ? = null
+
+    @Mock
+    private val comicsLocalRepository: IComicsLocalRepository? = null
+
+    @Mock
+    private val mMarvelsRemoteRepository: IMarvelsRemoteRepository? = null
+
+    @Mock
+    private val comicInteractorMock: ComicInteractor? = null
+
+    @Mock
+    private val schedulersProvider: ISchedulersProvider? = null
+
+    @InjectMocks
+    private val comicPresenter: ComicListPresenter? = null
+
+    @InjectMocks
+    private val comicInteractor: ComicInteractor? = null
+
+    private val testScheduler = TestScheduler()
+
+    private val dbItems = ComicList()
+    private val serverItems = mutableListOf<Comic>()
+
+    private val comicItems = mutableListOf<ComicViewData>()
+
+    lateinit var comicRemote:Comic
+    lateinit var comicData:Comic
+
+    @Before
+    fun setup() {
+
+        MockitoAnnotations.initMocks(this)
+
+        doReturn(testScheduler).`when`<ISchedulersProvider>(schedulersProvider).ioScheduler()
+        doReturn(testScheduler).`when`<ISchedulersProvider>(schedulersProvider).uiScheduler()
+        doReturn(testScheduler).`when`<ISchedulersProvider>(schedulersProvider).computationScheduler()
+
+        comicRemote = Comic()
+
+        comicRemote.id = 2
+        comicRemote.title = "Title2"
+        comicRemote.description = "description2"
+        comicRemote.thumbnailUrl = "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+
+        comicData = Comic()
+        comicData.id = 1
+        comicData.title = "TITLE1"
+        comicData.description = "description1"
+        comicData.thumbnailUrl ="http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+
+        val dbData = mutableListOf<Comic>()
+        dbData.add(comicData)
+        dbItems.comics = dbData
+        serverItems.add(comicRemote)
+    }
+
+    @Test
+    fun Should_Load_Comics_List_Into_View() {
+
+        doReturn(Single.just(dbItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<Comic>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList( any() )
+
+        doAnswer(object : Answer<Single<ComicList>> {
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock): Single<ComicList> {
+                return comicInteractor!!.getComicList( false, 20L)
+            }
+        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
+
+        val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
+
+        comicPresenter!!.loadComics(false)
+        testScheduler.triggerActions()
+
+        Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
+
+        Assert.assertEquals( 1, viewModelCaptor.allValues.size )
+        Assert.assertEquals( 1, viewModelCaptor.firstValue.list.size )
+
+        verify<IComicListView>(comicView, times(0)).onError(any())
+        verify<IComicListView>(comicView, times(1)).onLoadingStateChange(any())
+        verify<IComicListView>(comicView, times(1)).onComicsLoaded(any())
+
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 1)).getComicList()
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).getComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComicList(any())
+
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicDetails( any() )
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicsList( any() )
+    }
+
+    @Test
+    fun Should_Load_Comics_List_From_Database() {
+
+        doReturn(Single.just(dbItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<Comic>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList( any() )
+
+        doAnswer(object : Answer  <Single<ComicList>> {
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock):  Single<ComicList> {
+                return comicInteractor!!.getComicList( false, 20 )
+            }
+        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
+
+        val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
+
+        comicPresenter!!.loadComics(false)
+        testScheduler.triggerActions()
+
+        Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
+
+        Assert.assertEquals( 1, viewModelCaptor.allValues.size )
+        Assert.assertEquals( 1, viewModelCaptor.firstValue.list.size )
+
+        Assert.assertEquals("Item not loaded from Db", comicData.title, viewModelCaptor.firstValue.list.get(0).title )
+
+        verify<IComicListView>(comicView, times(0)).onError(any())
+        verify<IComicListView>(comicView, times(1)).onLoadingStateChange(any())
+        verify<IComicListView>(comicView, times(1)).onComicsLoaded(any())
+
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 1)).getComicList()
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).getComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComicList(any())
+
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicDetails( any() )
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicsList( any() )
+    }
+
+    @Test
+    fun Should_Load_Comics_List_From_Server_Refresh_True() {
+
+        doReturn(Single.just(dbItems)).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<Comic>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList( any() )
+
+        doAnswer(object : Answer <Single<ComicList> > {
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
+                return comicInteractor!!.getComicList( true, 20 )
+            }
+        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(),any() )
+
+        doAnswer(object : Answer <Single<ComicList> > {
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>   {
+
+                val comic = invocation.getArgument<ComicList>(0)
+                return Single.just(comic)
+            }
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList( any() )
+
+        val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
+
+        comicPresenter!!.loadComics(true )
+        testScheduler.triggerActions()
+
+        Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
+
+        Assert.assertEquals( 1, viewModelCaptor.allValues.size )
+        Assert.assertEquals( 1, viewModelCaptor.firstValue.list.size )
+
+        Assert.assertEquals("Item not loaded from Server", comicRemote.title, viewModelCaptor.firstValue.list.get(0).title )
+
+        verify<IComicListView>(comicView, times(0)).onError(any())
+        verify<IComicListView>(comicView, times(1)).onLoadingStateChange(any())
+        verify<IComicListView>(comicView, times(1)).onComicsLoaded(any())
+
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).getComicList()
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).getComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 1)).updateComicList(any())
+
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicDetails( any() )
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 1)).getComicsList( any() )
+    }
+
+    @Test
+    fun Should_Load_Comics_List_From_Server_Refresh_False_No_Db_Items() {
+
+        doReturn(Single.just(ComicList.empty())).`when`<IComicsLocalRepository>(comicsLocalRepository).getComicList()
+        doReturn(Single.just<List<Comic>>(serverItems)).`when`<IMarvelsRemoteRepository>(mMarvelsRemoteRepository).getComicsList( any() )
+
+        doAnswer(object : Answer <Any> {
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock): Any {
+                return comicInteractor!!.getComicList( false, 20 )
+            }
+        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any())
+
+        doAnswer(object : Answer <Single<ComicList> >{
+            @Throws(Throwable::class)
+            override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
+
+                val comic = invocation.getArgument<ComicList>(0)
+                return Single.just(comic)
+            }
+        }).`when`<IComicsLocalRepository>(comicsLocalRepository).updateComicList( any() )
+
+        val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
+
+        comicPresenter!!.loadComics(false)
+        testScheduler.triggerActions()
+
+        Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
+
+        Assert.assertEquals( 1, viewModelCaptor.allValues.size )
+        Assert.assertEquals( 1, viewModelCaptor.firstValue.list.size )
+
+        Assert.assertEquals("Item not loaded from Server", "Title2", viewModelCaptor.firstValue.list.get(0).title )
+
+        verify<IComicListView>(comicView, times(0)).onError(any())
+        verify<IComicListView>(comicView, times(1)).onLoadingStateChange(any())
+        verify<IComicListView>(comicView, times(1)).onComicsLoaded(any())
+
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 1)).getComicList()
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).getComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 0)).updateComic(any())
+        verify<IComicsLocalRepository>( comicsLocalRepository, times( 1)).updateComicList(any())
+
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicDetails( any() )
+        verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 1)).getComicsList( any() )
+    }
+}

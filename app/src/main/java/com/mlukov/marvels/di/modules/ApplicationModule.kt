@@ -25,7 +25,8 @@ import javax.inject.Singleton
 import dagger.Module
 import dagger.Provides
 import android.arch.persistence.room.Room
-
+import com.mlukov.marvels.domain.providers.ILogger
+import com.mlukov.marvels.domain.providers.Logger
 
 
 @Module
@@ -70,9 +71,9 @@ class ApplicationModule {
     }
 
     @Provides
-    internal fun providesArticlesApiRepository( articlesApiRepository: MarvelsRemoteRepository): IMarvelsRemoteRepository {
+    internal fun providesMarvelsApiRepository( comicApiRepository: MarvelsRemoteRepository): IMarvelsRemoteRepository {
 
-        return articlesApiRepository
+        return comicApiRepository
     }
 
     @Provides
@@ -90,9 +91,16 @@ class ApplicationModule {
     }
 
     @Provides
-    fun providesArticleInteractor(articleInteractor: ComicInteractor): IComicInteractor {
+    fun providesComicInteractor(comicInteractor: ComicInteractor): IComicInteractor {
 
-        return articleInteractor
+        return comicInteractor
+    }
+
+    @Provides
+    @Singleton
+    fun providesLogger():ILogger{
+
+        return Logger()
     }
 
 }

@@ -35,19 +35,19 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@tools:sample/full_names" />
+                    tools:text="@tools:sample/full_names"/>
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/thumbnailImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
+                    android:minWidth="200dp"
                     android:adjustViewBounds="true"
-                    android:scaleType="centerInside"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/titleTextView"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@tools:sample/avatars"/>
 
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/descriptionTextView"

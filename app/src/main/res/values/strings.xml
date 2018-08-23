@@ -1,9 +1,4 @@
 <resources>
-    <string name="source_shared_element_transition_comic_title_text" translatable="false">SourceSharedElementTransitionComicTitleText</string>
-    <string name="source_shared_element_transition_comic_thumb_image" translatable="false">SourceSharedElementTransitionThumbImage</string>
-    <string name="destination_shared_element_transition_comic_title_text" translatable="false">DestinationSharedElementTransitionComicTitleText</string>
-    <string name="destination_shared_element_transition_comic_thumb_image" translatable="false">DestinationSharedElementTransitionThumbImage</string>
-
     <string name="app_name">Comics</string>
     <string name="internet_connection_offline">The Internet connection appears to be offline.</string>
     <string name="oops_went_wrong_try">Oops, something went wrong. Sometimes these things happen, please try again.</string>

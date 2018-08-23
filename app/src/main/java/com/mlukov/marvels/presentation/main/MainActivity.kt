@@ -8,6 +8,7 @@ import com.mlukov.marvels.presentation.comic.details.model.ComicDetailsViewData
 import com.mlukov.marvels.presentation.comic.details.view.ComicDetailsFragment
 import com.mlukov.marvels.presentation.comic.list.view.ComicListFragment
 import com.mlukov.marvels.presentation.base.BaseActivity
+import com.mlukov.marvels.presentation.providers.IResourceProvider
 
 import javax.inject.Inject
 
@@ -19,6 +20,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, IMainNavigator 
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+
+    @Inject
+    lateinit var resourceProvider: IResourceProvider
 
     //region AppCompatActivity overrides
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,44 +36,36 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, IMainNavigator 
         super.onResume()
         showComicList()
     }
-
-    override fun onPause() {
-
-        super.onPause()
-    }
     //region AppCompatActivity overrides
 
-
     //region HasSupportFragmentInjector implementation
-
     override fun supportFragmentInjector(): AndroidInjector<Fragment>? {
 
         return dispatchingAndroidInjector
     }
     //endregion HasSupportFragmentInjector implementation
 
-
     //region IMainNavigator implementation
     override fun showComicList() {
 
-        var articlesFragment = supportFragmentManager.findFragmentByTag(ComicListFragment.TAG )
-        if (articlesFragment == null) {
+        var comicListFragment = supportFragmentManager.findFragmentByTag(ComicListFragment.TAG )
+        if (comicListFragment == null) {
 
-            articlesFragment = ComicListFragment.newInstance()
+            comicListFragment = ComicListFragment.newInstance()
         }
 
-        showScreen(articlesFragment, ComicListFragment.TAG, false, false)
+        showScreen(comicListFragment, ComicListFragment.TAG, false, false)
     }
 
-    override fun showComicDetails(comicDetailsViewData: ComicDetailsViewData) {
+    override fun showComicDetails(comicDetailsViewData: ComicDetailsViewData ) {
 
-        var articleDetailsFragment = supportFragmentManager.findFragmentByTag(ComicDetailsFragment.TAG )
-        if (articleDetailsFragment == null) {
+        var comicDetailsFragment = supportFragmentManager.findFragmentByTag(ComicDetailsFragment.TAG )
+        if (comicDetailsFragment == null) {
 
-            articleDetailsFragment = ComicDetailsFragment.newInstance(comicDetailsViewData )
+            comicDetailsFragment = ComicDetailsFragment.newInstance(comicDetailsViewData )
         }
 
-        showScreen(articleDetailsFragment, ComicDetailsFragment.TAG, true, true )
+        showScreen(comicDetailsFragment, ComicListFragment.TAG, true, true)
     }
     //endregion IMainNavigator implementation
 

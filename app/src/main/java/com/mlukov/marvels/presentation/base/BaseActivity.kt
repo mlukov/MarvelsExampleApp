@@ -39,49 +39,6 @@ open class BaseActivity : AppCompatActivity() {
 
         ft.commitAllowingStateLoss()
     }
-
-    fun showScreenWithSharedTransition(destination: Fragment,
-                                       sharedElements: List<View>?,
-                                       sharedElementTransitionNames: List<String>?,
-                                       sharedElementEnterAnimation: TransitionSet,
-                                       sharedElementReturnAnimation: TransitionSet,
-                                       contentTag: String,
-                                       addToBackStack: Boolean) {
-
-
-        val fm = supportFragmentManager
-        val ft = fm.beginTransaction()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && sharedElements != null
-                && sharedElements.size > 0
-                && sharedElementTransitionNames != null
-                && sharedElementTransitionNames.size > 0
-                && sharedElements.size == sharedElementTransitionNames.size) {
-
-            ft.setTransition(FragmentTransaction.TRANSIT_NONE)
-
-            for (i in sharedElements.indices) {
-
-                if (sharedElements[i] == null || TextUtils.isEmpty(sharedElementTransitionNames[i]))
-                    continue
-
-                ft.addSharedElement(sharedElements[i], sharedElementTransitionNames[i])
-            }
-
-            destination.sharedElementEnterTransition = sharedElementEnterAnimation
-            destination.sharedElementReturnTransition = sharedElementReturnAnimation
-        }
-
-        ft.replace(R.id.placeholder_content, destination, contentTag)
-
-        if (addToBackStack) {
-            ft.addToBackStack(contentTag + System.identityHashCode(destination).toString())
-        }
-
-        ft.commitAllowingStateLoss()
-        fm.executePendingTransactions()
-    }
     //endregion
 
     //region AppCompatActivity implementation

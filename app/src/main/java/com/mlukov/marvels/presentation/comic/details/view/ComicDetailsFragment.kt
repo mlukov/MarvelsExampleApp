@@ -48,11 +48,10 @@ class ComicDetailsFragment : Fragment(), IComicDetailsView {
     private var comicDetailsViewData : ComicDetailsViewData? = null
 
     @Inject
-    public lateinit var detailsPresenter: IComicDetailsPresenter
-
+    protected lateinit var detailsPresenter: IComicDetailsPresenter
 
     //region constructor
-    fun ArticleDetailsFragment() {
+    fun ComicDetailsFragment() {
         // Required empty public constructor
     }
     //endregion

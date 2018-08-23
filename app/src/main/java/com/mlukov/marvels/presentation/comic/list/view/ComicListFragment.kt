@@ -17,6 +17,7 @@ import com.mlukov.marvels.R
 import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
 import com.mlukov.marvels.presentation.comic.list.presenter.IComicListPresenter
 import dagger.android.support.AndroidSupportInjection
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class ComicListFragment : Fragment(), IComicListView {
@@ -35,10 +36,10 @@ class ComicListFragment : Fragment(), IComicListView {
     private var emptyListText: TextView? = null
 
     @Inject
-    lateinit var listAdapter: ComicsAdapter
+    protected lateinit var listPresenter: IComicListPresenter
 
     @Inject
-    lateinit var listPresenter: IComicListPresenter
+    protected lateinit var listAdapter :ComicsAdapter
 
     override fun onAttach(context: Context) {
 
@@ -73,7 +74,6 @@ class ComicListFragment : Fragment(), IComicListView {
 
         super.onResume()
         listPresenter.loadArticles( false )
-
     }
 
     override fun onPause() {
@@ -95,7 +95,6 @@ class ComicListFragment : Fragment(), IComicListView {
         val listIsEmpty = comicListViewModel.list.size == 0
         emptyListText?.setVisibility(if (listIsEmpty) View.VISIBLE else View.GONE)
     }
-
 
     override fun onError(errorMessage: String) {
 

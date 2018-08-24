@@ -2,21 +2,13 @@ package com.mlukov.marvels.repositories.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-class ComicImage {
-    
+data class ComicImage (
+
     @SerializedName("path")
-    var path: String? = null
-        private set
+    var path: String? = null,
 
     @SerializedName("extension")
-    var extension: String? = null
-        private set
-
-    constructor( path: String, extension: String) {
-
-        this.path = path
-        this.extension = extension
-    }
+    var extension: String? = null){
 
     val url : String get()= "$path.$extension"
 }

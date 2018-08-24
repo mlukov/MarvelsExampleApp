@@ -4,14 +4,14 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity
-class LocalComics {
+data class LocalComics
+    constructor(
+            @PrimaryKey
+            var id: Long =0,
 
-    @PrimaryKey
-    var id: Long =0
+            var title: String = "",
 
-    var title: String = ""
+            var description:String = "",
 
-    var description:String = ""
-
-    var thumbUrl: String = ""
+            var thumbUrl: String = ""){
 }

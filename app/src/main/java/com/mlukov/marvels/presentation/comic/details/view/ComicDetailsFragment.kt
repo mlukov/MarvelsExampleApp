@@ -133,7 +133,7 @@ class ComicDetailsFragment : Fragment(), IComicDetailsView {
         if( thumbnailImageView != null && comicDetailsViewData != null ){
 
             Glide.with(this)
-                    .load(comicDetailsViewData!!.thumbUlr)
+                    .load(comicDetailsViewData?.thumbUlr)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(thumbnailImageView)
         }

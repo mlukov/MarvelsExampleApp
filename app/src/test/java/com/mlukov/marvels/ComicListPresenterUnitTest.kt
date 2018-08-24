@@ -27,41 +27,39 @@ import org.mockito.Mockito.*
 class ComicListPresenterUnitTest {
 
     @Mock
-    val comicView: IComicListView? = null
+    lateinit var comicView: IComicListView
 
     @Mock
-    val resourceProvider : IResourceProvider? = null
+    lateinit var resourceProvider : IResourceProvider
 
     @Mock
     val logger : ILogger? = null
 
     @Mock
-    val networkInfoProvider : INetworkInfoProvider ? = null
+    lateinit var networkInfoProvider : INetworkInfoProvider
 
     @Mock
-    private val comicsLocalRepository: IComicsLocalRepository? = null
+    lateinit var comicsLocalRepository: IComicsLocalRepository
 
     @Mock
-    private val mMarvelsRemoteRepository: IMarvelsRemoteRepository? = null
+    lateinit var mMarvelsRemoteRepository: IMarvelsRemoteRepository
 
     @Mock
-    private val comicInteractorMock: ComicInteractor? = null
+    lateinit var comicInteractorMock: ComicInteractor
 
     @Mock
-    private val schedulersProvider: ISchedulersProvider? = null
+    lateinit var schedulersProvider: ISchedulersProvider
 
     @InjectMocks
-    private val comicPresenter: ComicListPresenter? = null
+    lateinit var comicPresenter: ComicListPresenter
 
     @InjectMocks
-    private val comicInteractor: ComicInteractor? = null
+    lateinit var comicInteractor: ComicInteractor
 
     private val testScheduler = TestScheduler()
 
     private val dbItems = ComicList()
     private val serverItems = mutableListOf<Comic>()
-
-    private val comicItems = mutableListOf<ComicViewData>()
 
     lateinit var comicRemote:Comic
     lateinit var comicData:Comic
@@ -103,13 +101,13 @@ class ComicListPresenterUnitTest {
         doAnswer(object : Answer<Single<ComicList>> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Single<ComicList> {
-                return comicInteractor!!.getComicList( false, 20L)
+                return comicInteractor.getComicList( false, 20L)
             }
         }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
-        comicPresenter!!.loadComics(false)
+        comicPresenter.loadComics(false)
         testScheduler.triggerActions()
 
         Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
@@ -139,13 +137,13 @@ class ComicListPresenterUnitTest {
         doAnswer(object : Answer  <Single<ComicList>> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock):  Single<ComicList> {
-                return comicInteractor!!.getComicList( false, 20 )
+                return comicInteractor.getComicList( false, 20 )
             }
         }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
-        comicPresenter!!.loadComics(false)
+        comicPresenter.loadComics(false)
         testScheduler.triggerActions()
 
         Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
@@ -177,7 +175,7 @@ class ComicListPresenterUnitTest {
         doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
-                return comicInteractor!!.getComicList( true, 20 )
+                return comicInteractor.getComicList( true, 20 )
             }
         }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(),any() )
 
@@ -192,7 +190,7 @@ class ComicListPresenterUnitTest {
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
-        comicPresenter!!.loadComics(true )
+        comicPresenter.loadComics(true )
         testScheduler.triggerActions()
 
         Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
@@ -224,7 +222,7 @@ class ComicListPresenterUnitTest {
         doAnswer(object : Answer <Any> {
             @Throws(Throwable::class)
             override fun answer(invocation: InvocationOnMock): Any {
-                return comicInteractor!!.getComicList( false, 20 )
+                return comicInteractor.getComicList( false, 20 )
             }
         }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any())
 
@@ -239,7 +237,7 @@ class ComicListPresenterUnitTest {
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
-        comicPresenter!!.loadComics(false)
+        comicPresenter.loadComics(false)
         testScheduler.triggerActions()
 
         Mockito.verify<IComicListView>(comicView).onComicsLoaded( viewModelCaptor.capture())
@@ -261,4 +259,18 @@ class ComicListPresenterUnitTest {
         verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 0)).getComicDetails( any() )
         verify<IMarvelsRemoteRepository>( mMarvelsRemoteRepository, times( 1)).getComicsList( any() )
     }
+
+    /*
+    Given:
+    Remote repo available
+    Local repo empty
+
+    When:
+    List screen loads
+
+    Then:
+    List returned to view
+    List writen to db
+
+     */
 }

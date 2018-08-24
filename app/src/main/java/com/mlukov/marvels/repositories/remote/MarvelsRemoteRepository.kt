@@ -47,7 +47,7 @@ constructor(private var apiController : MarvelsApiController,
         return apiController.getComicDetails(comicId, timeStamp, publicKey, hash )
                 .map{
 
-                    comicDataResponse -> createFrom( comicDataResponse.data!!.results!!.get( 0 ) )
+                    comicDataResponse -> createFrom( comicDataResponse.data?.results?.get( 0 ) ?: ComicRemote() )
                 }
     }
 

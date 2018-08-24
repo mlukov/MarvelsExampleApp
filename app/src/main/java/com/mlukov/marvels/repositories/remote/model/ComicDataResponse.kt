@@ -2,17 +2,14 @@ package com.mlukov.marvels.repositories.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-class ComicDataResponse {
+data class ComicDataResponse
+    constructor(
+            @SerializedName("status")
+            var status: String ?= null,
 
-    @SerializedName("status")
-    var status: String? = null
-        private set
+            @SerializedName("code")
+            var code: Int ?= null,
 
-    @SerializedName("code")
-    var code: Int?= null
-        private set
-
-    @SerializedName("data")
-    var data: ComicDataRemote? = null
-        private set
+            @SerializedName("data")
+            var data: ComicDataRemote ?= null ){
 }

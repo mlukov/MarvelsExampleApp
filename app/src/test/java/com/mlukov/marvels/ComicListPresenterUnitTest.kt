@@ -1,12 +1,12 @@
 package com.mlukov.marvels
 
 import com.mlukov.marvels.domain.interactors.ComicInteractor
+import com.mlukov.marvels.domain.interactors.IComicInteractor
 import com.mlukov.marvels.domain.models.Comic
 import com.mlukov.marvels.domain.models.ComicList
 import com.mlukov.marvels.domain.providers.ILogger
 import com.mlukov.marvels.domain.repositories.remote.IMarvelsRemoteRepository
 import com.mlukov.marvels.domain.repositories.local.IComicsLocalRepository
-import com.mlukov.marvels.presentation.comic.list.model.ComicViewData
 import com.mlukov.marvels.presentation.comic.list.presenter.ComicListPresenter
 import com.mlukov.marvels.presentation.comic.list.view.IComicListView
 import com.mlukov.marvels.presentation.comic.list.model.ComicListViewModel
@@ -45,7 +45,7 @@ class ComicListPresenterUnitTest {
     lateinit var mMarvelsRemoteRepository: IMarvelsRemoteRepository
 
     @Mock
-    lateinit var comicInteractorMock: ComicInteractor
+    lateinit var comicInteractorMock: IComicInteractor
 
     @Mock
     lateinit var schedulersProvider: ISchedulersProvider
@@ -103,7 +103,7 @@ class ComicListPresenterUnitTest {
             override fun answer(invocation: InvocationOnMock): Single<ComicList> {
                 return comicInteractor.getComicList( false, 20L)
             }
-        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
+        }).`when`<IComicInteractor>(comicInteractorMock).getComicList( any(), any() )
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
@@ -139,7 +139,7 @@ class ComicListPresenterUnitTest {
             override fun answer(invocation: InvocationOnMock):  Single<ComicList> {
                 return comicInteractor.getComicList( false, 20 )
             }
-        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any() )
+        }).`when`<IComicInteractor>(comicInteractorMock).getComicList( any(), any() )
 
         val viewModelCaptor = com.nhaarman.mockitokotlin2.argumentCaptor<ComicListViewModel>()
 
@@ -177,7 +177,7 @@ class ComicListPresenterUnitTest {
             override fun answer(invocation: InvocationOnMock): Single<ComicList>  {
                 return comicInteractor.getComicList( true, 20 )
             }
-        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(),any() )
+        }).`when`<IComicInteractor>(comicInteractorMock).getComicList( any(),any() )
 
         doAnswer(object : Answer <Single<ComicList> > {
             @Throws(Throwable::class)
@@ -224,7 +224,7 @@ class ComicListPresenterUnitTest {
             override fun answer(invocation: InvocationOnMock): Any {
                 return comicInteractor.getComicList( false, 20 )
             }
-        }).`when`<ComicInteractor>(comicInteractorMock).getComicList( any(), any())
+        }).`when`<IComicInteractor>(comicInteractorMock).getComicList( any(), any())
 
         doAnswer(object : Answer <Single<ComicList> >{
             @Throws(Throwable::class)
